@@ -25,7 +25,6 @@ public class MovieJsonDataParser {
     private static final String VOTE_AVERAGE_KEY = "vote_average";
     private static final String POPULARITY_KEY = "popularity";
 
-    private static final String IMAGE_BASE_URL = "http://image.tmdb.org/t/p/w370";
 
     public static List<MovieInfoDTO> getMovieDataFromJson(String json) throws JSONException {
         List<MovieInfoDTO> movieList = new ArrayList<>();
@@ -40,15 +39,13 @@ public class MovieJsonDataParser {
 
     private static MovieInfoDTO parseMovie(JSONObject jsonMovie) throws JSONException {
 
-        String url = IMAGE_BASE_URL + jsonMovie.getString(POSTER_PATH_KEY);
         return new MovieInfoDTO(
-                url,
+                jsonMovie.getString(POSTER_PATH_KEY),
                 jsonMovie.getString(OVERVIEW_KEY),
                 jsonMovie.getLong(ID_KEY),
                 jsonMovie.getString(TITLE_KEY),
                 jsonMovie.getDouble(POPULARITY_KEY),
-                jsonMovie.getDouble(VOTE_AVERAGE_KEY),
-                HttpMethodProvider.downloadImageGET(url)
+                jsonMovie.getDouble(VOTE_AVERAGE_KEY)
                 );
     }
 }

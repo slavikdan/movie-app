@@ -13,27 +13,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cz.example.slavk.movieapp.R;
-import cz.example.slavk.movieapp.model.MovieInfoDTO;
+import cz.example.slavk.movieapp.model.MovieInfoWithImage;
 
 /**
  * Created by Daniel Slavík on 12/01/2016.
  */
 public final class SquareMenuAdapter extends BaseAdapter {
-    private final List<MovieInfoDTO> mItems;
+    private final List<MovieInfoWithImage> mItems;
     private final LayoutInflater mInflater;
 
     public SquareMenuAdapter(Context context) {
         mInflater = LayoutInflater.from(context);
-        mItems = new ArrayList<MovieInfoDTO>();
+        mItems = new ArrayList<MovieInfoWithImage>();
     }
 
     // fill data
-    public void setData(List<MovieInfoDTO> data){
+    public void setData(List<MovieInfoWithImage> data){
         mItems.clear();
         addData(data);
     }
 
-    public void addData(List<MovieInfoDTO> data){
+    public void addData(List<MovieInfoWithImage> data){
         mItems.addAll(data);
         super.notifyDataSetChanged();
     }
@@ -44,13 +44,13 @@ public final class SquareMenuAdapter extends BaseAdapter {
     }
 
     @Override
-    public MovieInfoDTO getItem(int i) {
+    public MovieInfoWithImage getItem(int i) {
         return mItems.get(i);
     }
 
     @Override
     public long getItemId(int i) {
-        return mItems.get(i).getId();
+        return mItems.get(i).getMovieInfo().getId();
     }
 
     @Override
@@ -68,11 +68,13 @@ public final class SquareMenuAdapter extends BaseAdapter {
         picture = (ImageView) v.getTag(R.id.picture);
         name = (TextView) v.getTag(R.id.text);
 
-        MovieInfoDTO item = getItem(i);
+        MovieInfoWithImage item = getItem(i);
 
         picture.setImageBitmap(item.getImage());
-        name.setText(item.getTitle());
+        name.setText(item.getMovieInfo().getTitle());
 
         return v;
     }
+
+
 }

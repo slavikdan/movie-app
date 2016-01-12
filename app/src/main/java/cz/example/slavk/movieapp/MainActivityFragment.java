@@ -1,24 +1,29 @@
 package cz.example.slavk.movieapp;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.GridView;
 
 import org.json.JSONException;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 import cz.example.slavk.movieapp.graphic.adapter.SquareMenuAdapter;
 import cz.example.slavk.movieapp.http.HttpMethodProvider;
 import cz.example.slavk.movieapp.model.MovieInfoDTO;
+import cz.example.slavk.movieapp.model.MovieInfoWithImage;
 import cz.example.slavk.movieapp.model.parser.MovieJsonDataParser;
 
 /**
@@ -45,13 +50,22 @@ public class MainActivityFragment extends Fragment {
         GridView gridView = (GridView) rootView.findViewById(R.id.gridview);
 
         adapter = new SquareMenuAdapter(getContext());
+
         gridView.setAdapter(adapter);
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                MovieInfoWithImage data = (MovieInfoWithImage) parent.getItemAtPosition(position);
+                Intent detailIntent = new Intent(getActivity(), DetailActivity.class)
+                        .putExtra(MovieInfoDTO.class.getSimpleName(), data.getMovieInfo());
+                startActivity(detailIntent);
+            }
+        });
 
         return rootView;
     }
 
-
-    private static class MovieDataProviderAsync extends AsyncTask<Void, Void, List<MovieInfoDTO>> {
+    private static class MovieDataProviderAsync extends AsyncTask<Void, Void, List<MovieInfoWithImage>> {
 
         private static final String LOG_CLASS_NAME = MovieDataProviderAsync.class.getSimpleName();
 
@@ -59,13 +73,13 @@ public class MainActivityFragment extends Fragment {
         private final String API_KEY_PARAM = "api_key";
 
         @Override
-        protected void onPostExecute(List<MovieInfoDTO> movieInfoDTOs) {
+        protected void onPostExecute(List<MovieInfoWithImage> movieInfoDTOs) {
             super.onPostExecute(movieInfoDTOs);
             adapter.setData(movieInfoDTOs);
         }
 
         @Override
-        protected List<MovieInfoDTO> doInBackground(Void... params) {
+        protected List<MovieInfoWithImage> doInBackground(Void... params) {
 
             String preparedUrl = prepareUrl();
             Log.d(LOG_CLASS_NAME, "prepared url: " + preparedUrl);
@@ -73,8 +87,12 @@ public class MainActivityFragment extends Fragment {
             //send request to the server
             String jsonResponse = HttpMethodProvider.downloadJsonGET(preparedUrl);
             //return parsed data
+            List<MovieInfoWithImage> result = new ArrayList<>();
             try {
-                return MovieJsonDataParser.getMovieDataFromJson(jsonResponse);
+                for (MovieInfoDTO movieInfo:MovieJsonDataParser.getMovieDataFromJson(jsonResponse)) {
+                    result.add(new MovieInfoWithImage(movieInfo));
+                }
+                return result;
             } catch (JSONException e) {
                 Log.e(LOG_CLASS_NAME, "Unexpect JSON format", e);
                 return null;
