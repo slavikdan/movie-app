@@ -11,6 +11,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+
 import cz.example.slavk.movieapp.model.MovieInfoDTO;
 import cz.example.slavk.movieapp.model.MovieInfoWithImage;
 
@@ -28,6 +31,8 @@ public class DetailActivityFragment extends Fragment {
     private static TextView mOverview;
     private static ImageView mPoster;
     private final static String DOUBLE_FORMAT_PATTERN = "%1$,.2f";
+    //TODO move format to settings
+    private static final DateFormat DATE_FORMATER = new SimpleDateFormat("yyyy/MM/dd");
 
     public DetailActivityFragment() {
     }
@@ -51,7 +56,7 @@ public class DetailActivityFragment extends Fragment {
             Log.d(LOG_TAG, "Extra data: " + movieInfo);
             mTitle.setText(movieInfo.getTitle());
             mAverageVote.setText(String.format(DOUBLE_FORMAT_PATTERN, movieInfo.getVoteAverage()));
-            mReleaseDate.setText("test");
+            mReleaseDate.setText(DATE_FORMATER.format(movieInfo.getReleaseDate()));
             mOverview.setText(movieInfo.getOverview());
         }
 

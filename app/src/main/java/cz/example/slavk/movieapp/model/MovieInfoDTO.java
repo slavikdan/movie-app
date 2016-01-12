@@ -3,6 +3,7 @@ package cz.example.slavk.movieapp.model;
 import android.graphics.Bitmap;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * Class for transfering information about a movie
@@ -16,14 +17,20 @@ public class MovieInfoDTO implements Serializable {
     private String title;
     private double popularity;
     private double voteAverage;
+    private Date releaseDate;
 
-    public MovieInfoDTO(String posterPath, String overview, Long id, String title, double popularity, double voteAverage) {
+    public MovieInfoDTO(String posterPath, String overview, Long id, String title, double popularity, double voteAverage, Date releaseDate) {
         this.posterPath = posterPath;
         this.overview = overview;
         this.id = id;
         this.title = title;
         this.popularity = popularity;
         this.voteAverage = voteAverage;
+        this.releaseDate = releaseDate;
+    }
+
+    public Date getReleaseDate() {
+        return releaseDate;
     }
 
     public String getPosterPath() {
@@ -59,6 +66,7 @@ public class MovieInfoDTO implements Serializable {
                 ", title='" + title + '\'' +
                 ", popularity=" + popularity +
                 ", voteAverage=" + voteAverage +
+                ", releaseDate=" + releaseDate +
                 '}';
     }
 }
