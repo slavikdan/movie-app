@@ -1,6 +1,7 @@
 package cz.example.slavk.movieapp.graphic.adapter;
 
 import android.content.Context;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,40 +11,31 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import cz.example.slavk.movieapp.R;
+import cz.example.slavk.movieapp.model.MovieInfoDTO;
 
 /**
  * Created by Daniel Slavík on 12/01/2016.
  */
 public final class SquareMenuAdapter extends BaseAdapter {
-    private final List<Item> mItems = new ArrayList<Item>();
+    private final List<MovieInfoDTO> mItems;
     private final LayoutInflater mInflater;
 
     public SquareMenuAdapter(Context context) {
         mInflater = LayoutInflater.from(context);
-
-        /*mItems.add(new Item("Red",       R.drawable.red));
-        mItems.add(new Item("Magenta",   R.drawable.magenta));
-        mItems.add(new Item("Dark Gray", R.drawable.dark_gray));
-        mItems.add(new Item("Gray",      R.drawable.gray));
-        mItems.add(new Item("Green",     R.drawable.green));
-        mItems.add(new Item("Cyan",      R.drawable.cyan));*/
+        mItems = new ArrayList<MovieInfoDTO>();
     }
 
     // fill data
-    public void setData(Map<String,Integer> data){
+    public void setData(List<MovieInfoDTO> data){
         mItems.clear();
-        for (String key: data.keySet()) {
-            mItems.add(new Item(key,data.get(key)));
-        }
+        addData(data);
     }
 
-    public void addData(Map<String,Integer> data){
-        for (String key: data.keySet()) {
-            mItems.add(new Item(key,data.get(key)));
-        }
+    public void addData(List<MovieInfoDTO> data){
+        mItems.addAll(data);
+        super.notifyDataSetChanged();
     }
 
     @Override
@@ -52,13 +44,13 @@ public final class SquareMenuAdapter extends BaseAdapter {
     }
 
     @Override
-    public Item getItem(int i) {
+    public MovieInfoDTO getItem(int i) {
         return mItems.get(i);
     }
 
     @Override
     public long getItemId(int i) {
-        return mItems.get(i).drawableId;
+        return mItems.get(i).getId();
     }
 
     @Override
@@ -76,21 +68,11 @@ public final class SquareMenuAdapter extends BaseAdapter {
         picture = (ImageView) v.getTag(R.id.picture);
         name = (TextView) v.getTag(R.id.text);
 
-        Item item = getItem(i);
+        MovieInfoDTO item = getItem(i);
 
-        picture.setImageResource(item.drawableId);
-        name.setText(item.name);
+        picture.setImageBitmap(item.getImage());
+        name.setText(item.getTitle());
 
         return v;
-    }
-
-    private static class Item {
-        public final String name;
-        public final int drawableId;
-
-        Item(String name, int drawableId) {
-            this.name = name;
-            this.drawableId = drawableId;
-        }
     }
 }
