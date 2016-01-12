@@ -1,8 +1,10 @@
 package cz.example.slavk.movieapp;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,6 +21,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.prefs.PreferencesFactory;
 
 import cz.example.slavk.movieapp.graphic.adapter.SquareMenuAdapter;
 import cz.example.slavk.movieapp.http.HttpMethodProvider;
@@ -31,6 +34,7 @@ import cz.example.slavk.movieapp.model.parser.MovieJsonDataParser;
  */
 public class MainActivityFragment extends Fragment {
 
+    private static final String TAG_LOG_CLASS = MainActivityFragment.class.getSimpleName();
     private static SquareMenuAdapter adapter;
 
     public MainActivityFragment() {
@@ -39,7 +43,14 @@ public class MainActivityFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        new MovieDataProviderAsync().execute();
+
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        Log.d(TAG_LOG_CLASS,sharedPref.getAll().toString());
+        String preferredOrder = sharedPref.getString(
+                getString(R.string.pref_order_key),
+                getString(R.string.pref_order_default_value));
+
+        new MovieDataProviderAsync().execute(preferredOrder);
     }
 
     @Override
@@ -65,7 +76,7 @@ public class MainActivityFragment extends Fragment {
         return rootView;
     }
 
-    private static class MovieDataProviderAsync extends AsyncTask<Void, Void, List<MovieInfoWithImage>> {
+    private static class MovieDataProviderAsync extends AsyncTask<String, Void, List<MovieInfoWithImage>> {
 
         private static final String LOG_CLASS_NAME = MovieDataProviderAsync.class.getSimpleName();
 
@@ -79,9 +90,9 @@ public class MainActivityFragment extends Fragment {
         }
 
         @Override
-        protected List<MovieInfoWithImage> doInBackground(Void... params) {
+        protected List<MovieInfoWithImage> doInBackground(String... params) {
 
-            String preparedUrl = prepareUrl();
+            String preparedUrl = prepareUrl(params[0]);
             Log.d(LOG_CLASS_NAME, "prepared url: " + preparedUrl);
 
             //send request to the server
@@ -94,23 +105,20 @@ public class MainActivityFragment extends Fragment {
                 }
                 return result;
             } catch (JSONException e) {
-                Log.e(LOG_CLASS_NAME, "Unexpect JSON format", e);
+                Log.e(LOG_CLASS_NAME, "unexpected JSON format", e);
                 return null;
             }
         }
 
-        private String prepareUrl(){
+        private String prepareUrl(String urlpath){
+            Log.d(TAG_LOG_CLASS, "preferred order: " + urlpath);
             Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon()
-                    .appendPath(getPathAccordingToPreferences())
+                    .appendPath(urlpath)
                     .appendQueryParameter(API_KEY_PARAM, BuildConfig.MOVIE_DB_API_KEY)
                     .build();
             return builtUri.toString();
         }
 
-        // select a correct path according to user a movie list preference
-        private String getPathAccordingToPreferences() {
-            return "upcoming";
-        }
     }
 
 }

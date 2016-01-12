@@ -60,6 +60,7 @@ public class HttpMethodProvider {
 
     private static <T> T sendHttpRequestGET(final String urlStr, InputStreamConverter<T> converter) {
 
+        Log.d(LOG_CLASS_NAME,"Performing request to " + urlStr);
         URL url;
         try {
             url = new URL(urlStr);
@@ -82,7 +83,7 @@ public class HttpMethodProvider {
 
             urlConnection.connect();
             if (urlConnection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                Log.d(LOG_CLASS_NAME, "Http request not successful: " + urlConnection.getResponseCode());
+                Log.e(LOG_CLASS_NAME, "Http request for url " + urlStr + " not successful: " + urlConnection.getResponseCode());
                 return null;
             }
             // Read the input stream into a String
