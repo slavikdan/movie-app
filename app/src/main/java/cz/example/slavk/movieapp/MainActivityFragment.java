@@ -76,7 +76,7 @@ public class MainActivityFragment extends Fragment {
         return rootView;
     }
 
-    private static class MovieDataProviderAsync extends AsyncTask<String, Void, List<MovieInfoWithImage>> {
+    private static class MovieDataProviderAsync extends AsyncTask<String, Void, List<MovieInfoDTO>> {
 
         private static final String LOG_CLASS_NAME = MovieDataProviderAsync.class.getSimpleName();
 
@@ -84,13 +84,13 @@ public class MainActivityFragment extends Fragment {
         private final String API_KEY_PARAM = "api_key";
 
         @Override
-        protected void onPostExecute(List<MovieInfoWithImage> movieInfoDTOs) {
+        protected void onPostExecute(List<MovieInfoDTO> movieInfoDTOs) {
             super.onPostExecute(movieInfoDTOs);
             adapter.setData(movieInfoDTOs);
         }
 
         @Override
-        protected List<MovieInfoWithImage> doInBackground(String... params) {
+        protected List<MovieInfoDTO> doInBackground(String... params) {
 
             String preparedUrl = prepareUrl(params[0]);
             Log.d(LOG_CLASS_NAME, "prepared url: " + preparedUrl);
@@ -100,10 +100,7 @@ public class MainActivityFragment extends Fragment {
             //return parsed data
             List<MovieInfoWithImage> result = new ArrayList<>();
             try {
-                for (MovieInfoDTO movieInfo:MovieJsonDataParser.getMovieDataFromJson(jsonResponse)) {
-                    result.add(new MovieInfoWithImage(movieInfo));
-                }
-                return result;
+                return  MovieJsonDataParser.getMovieDataFromJson(jsonResponse);
             } catch (JSONException e) {
                 Log.e(LOG_CLASS_NAME, "unexpected JSON format", e);
                 return null;

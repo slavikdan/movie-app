@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cz.example.slavk.movieapp.R;
+import cz.example.slavk.movieapp.model.MovieInfoDTO;
 import cz.example.slavk.movieapp.model.MovieInfoWithImage;
 
 /**
@@ -28,12 +29,12 @@ public final class SquareMenuAdapter extends BaseAdapter {
     }
 
     // fill data
-    public void setData(List<MovieInfoWithImage> data){
+    public void setData(List<MovieInfoDTO> data){
         mItems.clear();
         addData(data);
     }
 
-    public void addData(List<MovieInfoWithImage> data){
+    public void addData(List<MovieInfoDTO> data){
         mItems.addAll(data);
         super.notifyDataSetChanged();
     }
